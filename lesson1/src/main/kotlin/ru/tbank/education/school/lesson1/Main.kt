@@ -12,15 +12,19 @@ fun main() {
     val f = "hello $d  world"
     var g = 1 // в отличии от val ожно менять значение
     g = 2
-    // Test
-    val o = "abcd $d"
-    println(o)
-    var k = 1
-    k += 1
-    println(k)
-    if (q == null) {
-        println("$q is null")
+
+    val array = arrayOf(1, 2, 3)
+    val doubleArray =
+        Array(2) { Array(2) { 0 } }
+    println(doubleArray[0][0])
+
+    for (i in 1 .. 10) {
+        println(i)
     }
+    for (elem in array) {
+        print(elem)
+    }
+
 
 
 

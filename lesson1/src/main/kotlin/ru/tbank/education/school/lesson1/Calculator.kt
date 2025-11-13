@@ -37,5 +37,5 @@ fun String.calculate(): Double? {
 
 fun main() {
     println(calculate(10.0, 2.0, OperationType.MULTIPLY))
-    println("10 + unknown".calculate())
+    println("10 плюс 2".calculate())
 }
