@@ -5,11 +5,15 @@
 
 ```bash
 TODO()
+grep -r "ERROR" logs/old > errors.txt
 ```
 
 ## Задание 2. Архивация старых логов
 Создать каталог archived/ в корне проекта и переместить туда все файлы из logs/old.
 
+
+mkdir -p archieved
+mv logs/old/* archieved/
 ```bash
 TODO()
 ```
@@ -18,6 +22,8 @@ TODO()
 Посчитать общий размер каталога logs и записать результат в logs_size.txt.
 
 ```bash
+du -sh logs/ > logs_size.txt
+
 TODO()
 ```
 
@@ -25,12 +31,14 @@ TODO()
 Найти самый большой файл в каталоге logs (без учёта подкаталогов) и записать его имя в файл biglog.txt.
 
 ```bash
+ls -S logs/ | head -1 > biglog.txt
 TODO()
 ```
 
 ## Задание 5. Подсчёт количества логов
-Подсчитать количество файлов с расширением .log во всём каталоге logs и сохранить результат в log_count.txt.
 
+Подсчитать количество файлов с расширением .log во всём каталоге logs и сохранить результат в log_count.txt.
+find logs/ -name "*.log" -type f | wc -l > log_count.txt
 ```bash
 TODO()
 ```
@@ -39,6 +47,7 @@ TODO()
 Найти во всех config/*.conf строки, содержащие слово "host", и записать в host_params.txt.
 
 ```bash
+grep "host" logs/config/*.conf > host_params.txt
 TODO()
 ```
 
@@ -46,6 +55,8 @@ TODO()
 Создать zip-архив config_backup.zip, содержащий все файлы из config/.
 
 ```bash
+tar -czf config_backup.tar.gz logs/config/
+
 TODO()
 ```
 
@@ -55,13 +66,18 @@ TODO()
 - все *.log из logs (включая old/)
 - файл errors.txt (если он есть)
 
+tar -czf project_backup.tar.gz \
+$(find logs/config/ -name "*.conf") \
+$(find logs/ -name "*.log") \
+$( [ -f "errors.txt" ] && echo "errors.txt" )
+
 ```bash
 TODO()
 ```
 
 ## Задание 9. Очистка пустых строк в логах
 Создать файл cleaned_app.log, содержащий содержимое app.log без пустых строк.
-
+grep -v '^$' logs/app.logs > cleaned_app.log
 ```bash
 TODO()
 ```
@@ -72,9 +88,11 @@ app.conf 12
 db.conf 8  
 (где число — количество строк в файле)
 
-```bash
-TODO()
-```
+wc -l logs/config/*.conf | awk '{print $2, $1}' | grep -v "total" > conf_stats.txt
+
+wc -l config/*.conf — подсчет строк во всех такого типа
+awk '{print $2, $1}' — swap: сначала имя, потом кол-во строк
+grep -v "total" — удаляем "total" в конце
 
 
 ## Задача: Создать собственный архиватор
