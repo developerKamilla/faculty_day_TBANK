@@ -57,12 +57,16 @@ fun task7() {
 
 fun normalize(line: String): Triple<String, Int, String>? {
     val trimmedLine = line.trim()
+    // Pattern A: YYYY-MM-DD HH:MM | ID:XXX | STATUS:XXX
     val patternA = Regex("""(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2}).*?ID:\s*(\d+).*?STATUS:\s*(\w+)""", RegexOption.IGNORE_CASE)
+    // Pattern B: TS=DD/MM/YYYY-HH:MM; status=XXX; #XXX
     val patternB = Regex("""TS=(\d{2})/(\d{2})/(\d{4})-(\d{2}:\d{2}).*?status=(\w+).*?#(\d+)""", RegexOption.IGNORE_CASE)
+    // [DD.MM.YYYY HH:MM] XXX id:XXX
     val patternC = Regex("""\[(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}:\d{2})\]\s+(\w+).*?id:\s*(\d+)""", RegexOption.IGNORE_CASE)
     patternA.find(trimmedLine)?.let { match ->
         val (year, month, day, time, idStr, status) = match.destructured
         val statusLower = status.lowercase()
+        //         // Преобразуем дату в единый формат: ГГГГ-ММ-ДД ЧЧ:ММ
         if (statusLower in listOf("sent", "delivered")) {
             val dt = "$year-$month-$day $time"
             return Triple(dt, idStr.toInt(), statusLower)
@@ -105,12 +109,30 @@ fun testNormalize() {
         }
     }
 }
+// find(trimmedLine) – ищет первое совпадение с паттерном
+//
+//?.let { } – если найдено, выполняет блок кода
+//
+//match.destructured – распаковывает группы захвата в переменные
+//
+//status.lowercase() – нормализует статус (Sent → sent, DELIVERED → delivered)
+//
+//Проверка статуса – обрабатывает только "sent" или "delivered"
+//
+//Форматирование даты – приводит все форматы к ГГГГ-ММ-ДД ЧЧ:ММ
+//
+//return Triple(...) – возвращает результат и прекращает проверку
 
 data class DeliveryResult(val id: Int, val duration: Int)
 
 fun calculateDeliveries(normalizedLines: List<Triple<String, Int, String>>): Map<String, Any> {
+    // Преобразует список событий в структуру: ID -> список событий этого ID
     val grouped = normalizedLines.groupBy { it.second }
-
+    // ✅ Полные доставки (complete) - есть и отправка, и доставка
+    //
+    //❌ Неполные (incomplete) - отсутствует одно из событий
+    //
+    //⚠️ Ошибки времени (timeError) - доставка раньше отправки
     val complete = mutableListOf<DeliveryResult>()
     val incomplete = mutableListOf<Int>()
     val timeError = mutableListOf<Int>()
