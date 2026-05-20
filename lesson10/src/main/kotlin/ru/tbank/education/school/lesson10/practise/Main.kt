@@ -1,6 +1,8 @@
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 fun main() {
     task1()
@@ -8,6 +10,14 @@ fun main() {
     task2()
     println()
     task3()
+    println()
+    task4()
+    println()
+    task5()
+    println()
+    task7()
+    println()
+    task8()
 }
 
 /*
@@ -87,4 +97,71 @@ fun task3() {
         .sorted()
 
     println("Task 3 repeated words: ${repeated.joinToString(", ")}")
+}
+
+/*
+4) Регулярные выражения: проверка формата
+["A-123", "B-7", "AA-12", "C-001", "D-99x"]
+Оставить только строки формата: одна заглавная буква, затем -, затем 1–3 цифры.
+*/
+fun task4() {
+    val strings = listOf("A-123", "B-7", "AA-12", "C-001", "D-99x")
+    val re = Regex("""^[A-Z]-\d{1,3}$""")
+    val filtered = strings.filter { re.matches(it) }
+    println("Task 4 filtered: $filtered")
+}
+
+/*
+5) Строки: нормализация пробелов
+["  Hello   world  ", "A   B    C", "   one"]
+Убрать пробелы по краям и заменить подряд идущие пробелы внутри на один пробел.
+*/
+fun task5() {
+    val strings = listOf("  Hello   world  ", "A   B    C", "   one")
+    val normalized = strings.map { s ->
+        s.trim().replace(Regex("""\s+"""), " ")
+    }
+    println("Task 5 normalized: $normalized")
+}
+
+/*
+7) Коллекции: группировка по ключу
+["math:Ivan", "bio:Olga", "math:Max", "bio:Ivan", "cs:Olga"]
+Построить словарь: предмет -> список учеников, сохранив порядок появления.
+*/
+fun task7() {
+    val strings = listOf("math:Ivan", "bio:Olga", "math:Max", "bio:Ivan", "cs:Olga")
+    val result = linkedMapOf<String, MutableList<String>>()
+    for (s in strings) {
+        val parts = s.split(":")
+        if (parts.size == 2) {
+            val subject = parts[0]
+            val student = parts[1]
+            result.getOrPut(subject) { mutableListOf() }.add(student)
+        }}
+    println("Task 7 grouped: $result")
+}
+
+/*
+8) Регулярные выражения + даты: извлечение времени из текста
+["Start at 2026/01/22 09:14", "No time here", "End: 22-01-2026 18:05"]
+Найти строки с датой и временем, привести к формату "YYYY-MM-DD HH:MM".
+*/
+fun task8() {
+    val strings = listOf(
+        "Start at 2026/01/22 09:14",
+        "No time here",
+        "End: 22-01-2026 18:05"
+    )
+    val re1 = Regex("""(\d{4})/(\d{2})/(\d{2})\s+(\d{2}):(\d{2})""")
+    val results = strings.mapNotNull { s -> re1.find(s)?.let { m ->
+            val (year, month, day, hour, minute) = m.destructured
+            String.format("%s-%s-%s %s:%s", year, month, day, hour, minute)
+        } 
+        ?: re2.find(s)?.let { m ->
+            val (day, month, year, hour, minute) = m.destructured
+            String.format("%s-%s-%s %s:%s", year, month, day, hour, minute)
+        }
+    }
+    println("Task 8 extracted datetimes: $results")
 }
